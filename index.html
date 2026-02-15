@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Байт Кода: Кружок Информатики</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        :root {
+            --tg-bg: #17212b;
+            --tg-header: #1e2b36;
+            --tg-message: #1e2b36;
+            --tg-own: #2b5278;
+            --tg-border: #2b3a45;
+            --tg-text: #fff;
+            --tg-secondary: #8e9ca8;
+            --tg-accent: #6ab2f2;
+        }
+        
+        body {
+            background: var(--tg-bg);
+            color: var(--tg-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+        
+        /* Глюк-темы */
+        body.glitch-mode {
+            --tg-bg: #0a0a0a;
+            --tg-header: #1a1a1a;
+            --tg-message: #1a1a1a;
+            --tg-border: #ff0000;
+            --tg-accent: #ff6b6b;
+            animation: screenGlitch 0.2s infinite;
+        }
+        
+        @keyframes screenGlitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            20% { transform: translate(-2px, 2px); filter: hue-rotate(90deg); }
+            40% { transform: translate(2px, -2px); filter: hue-rotate(180deg); }
+            60% { transform: translate(-1px, 1px); filter: hue-rotate(270deg); }
+            80% { transform: translate(1px, -1px); filter: hue-rotate(360deg); }
+            100% { transform: translate(0); filter: hue-rotate(0deg); }
+        }
+        
+        /* Telegram Header */
+        .tg-header {
+            background: var(--tg-header);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--tg-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            color: var(--tg-accent);
+            font-size: 24px;
+            line-height: 1;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-weight: 600;
+            font-size: 17px;
+            flex: 1;
+        }
+        
+        .menu-btn {
+            color: var(--tg-accent);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* Аватарки */
+        .members-bar {
+            display: flex;
+            gap: 16px;
+            padding: 12px 16px;
+            background: var(--tg-header);
+            border-bottom: 1px solid var(--tg-border);
+            overflow-x: auto;
+        }
+        
+        .member {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            min-width: 60px;
+        }
+        
+        .avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: var(--tg-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .avatar.bingus-glitch {
+            animation: avatarGlitch 0.5s infinite;
+        }
+        
+        @keyframes avatarGlitch {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg) scale(1.1); }
+            50% { transform: rotate(-5deg) scale(0.9); }
+            75% { transform: rotate(3deg); }
+            100% { transform: rotate(0deg); }
+        }
+        
+        .member-name {
+            font-size: 12px;
+            color: var(--tg-secondary);
+        }
+        
+        .online-badge {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+        }
+        
+        /* Чат */
+        .chat-container {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            min-height: 60vh;
+        }
+        
+        .message {
+            display: flex;
+            gap: 8px;
+            max-width: 85%;
+            opacity: 1;
+            transition: opacity 0.3s;
+        }
+        
+        .message.deleted {
+            opacity: 0.3;
+            filter: blur(1px);
+        }
+        
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--tg-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            background: var(--tg-message);
+            padding: 8px 12px;
+            border-radius: 12px 12px 12px 4px;
+            word-break: break-word;
+        }
+        
+        .own-message .message-content {
+            background: var(--tg-own);
+            border-radius: 12px 12px 4px 12px;
+        }
+        
+        .message-name {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: var(--tg-accent);
+        }
+        
+        .own-message .message-name {
+            color: #fff;
+            text-align: right;
+        }
+        
+        .message-text {
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: var(--tg-secondary);
+            margin-top: 4px;
+            text-align: right;
+        }
+        
+        .code-block {
+            background: #0f1a24;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 8px 0;
+            border-left: 3px solid var(--tg-accent);
+        }
+        
+        .image-message {
+            max-width: 200px;
+            border-radius: 12px;
+            margin: 4px 0;
+            cursor: pointer;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--tg-message);
+            border-radius: 20px;
+            width: fit-content;
+            margin-left: 52px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--tg-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+            30% { opacity: 1; transform: translateY(-4px); }
+        }
+        
+        /* Нижняя панель */
+        .input-area {
+            padding: 16px;
+            background: var(--tg-header);
+            border-top: 1px solid var(--tg-border);
+            position: sticky;
+            bottom: 0;
+        }
+        
+        .button {
+            background: var(--tg-accent);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 16px;
+            width: 100%;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .button:active {
+            transform: scale(0.98);
+        }
+        
+        .button.secondary {
+            background: var(--tg-border);
+        }
+        
+        .button.danger {
+            background: #b52b2b;
+        }
+        
+        .button.hidden {
+            display: none;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        /* Синий экран */
+        .bsod {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000aa;
+            color: white;
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: bsodFlicker 2s infinite;
+        }
+        
+        @keyframes bsodFlicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.9; background: #000088; }
+        }
+        
+        .bsod pre {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .bsod.hidden {
+            display: none;
+        }
+        
+        /* Меню */
+        .menu-panel {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            height: 100%;
+            background: var(--tg-header);
+            border-left: 1px solid var(--tg-border);
+            transition: right 0.3s;
+            z-index: 1000;
+            padding: 60px 20px 20px;
+        }
+        
+        .menu-panel.open {
+            right: 0;
+        }
+        
+        .menu-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--tg-border);
+            cursor: pointer;
+        }
+        
+        /* Камера */
+        .camera-preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .camera-preview video {
+            width: 100%;
+            height: 80%;
+            object-fit: cover;
+        }
+        
+        .camera-controls {
+            display: flex;
+            gap: 16px;
+            padding: 20px;
+            justify-content: center;
+        }
+        
+        /* Фото в чате */
+        .photo-message {
+            max-width: 200px;
+            border-radius: 12px;
+            margin: 4px 0;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .photo-message.glitch {
+            border-color: #ff0000;
+            filter: hue-rotate(180deg);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Telegram Header -->
+    <div class="tg-header">
+        <div class="back-btn" onclick="closeApp()">←</div>
+        <div class="header-title" id="headerTitle">ИнфоКоты • День 1</div>
+        <div class="menu-btn" onclick="toggleMenu()">⋯</div>
+    </div>
+    
+    <!-- Меню -->
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-item" onclick="showSettings()">⚙️ Настройки</div>
+        <div class="menu-item" onclick="showGallery()">🖼️ Галерея</div>
+        <div class="menu-item" onclick="showAbout()">📜 О игре</div>
+        <div class="menu-item" onclick="deleteSave()">🗑️ Удалить сохранение</div>
+        <div class="menu-item" onclick="toggleMenu()">✖️ Закрыть</div>
+    </div>
+    
+    <!-- Аватарки -->
+    <div class="members-bar" id="membersBar">
+        <div class="member" onclick="showProfile('shlypa')">
+            <div class="avatar" id="avatarShlypa">😺</div>
+            <span class="member-name">Шлёпа</span>
+        </div>
+        <div class="member" onclick="showProfile('bingus')">
+            <div class="avatar" id="avatarBingus">😿</div>
+            <span class="member-name">Бингус</span>
+        </div>
+        <div class="member" onclick="showProfile('popcat')">
+            <div class="avatar" id="avatarPopcat">😸</div>
+            <span class="member-name">Попкэт</span>
+        </div>
+    </div>
+    
+    <!-- Чат -->
+    <div class="chat-container" id="chat"></div>
+    
+    <!-- Индикатор печати -->
+    <div class="typing-indicator hidden" id="typingIndicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+    </div>
+    
+    <!-- Нижняя панель -->
+    <div class="input-area" id="inputArea">
+        <button class="button" id="actionButton1" onclick="handleAction1()"></button>
+        <button class="button secondary" id="actionButton2" onclick="handleAction2()"></button>
+        <div class="quick-actions" id="quickActions"></div>
+    </div>
+    
+    <!-- Синий экран -->
+    <div class="bsod hidden" id="bsod">
+        <pre>
+A problem has been detected...
+╔══════════════════════════════════════╗
+║  BINGUS_IS_SAD                       ║
+║  SHLYPA_OVERHEAT                      ║
+║  POPCAT_LOOP                           ║
+╚══════════════════════════════════════╝
+
+Technical information:
+*** STOP: 0x000000FEED (0x00000000, 0x00000000, 0x00000000, 0x00000000)
+
+*** shlypa.sys - Address 0xFEEDBEEF base at 0xBA5EBA11, DateStamp 3:15:00
+
+Press any key to continue...
+        </pre>
+    </div>
+    
+    <!-- Камера -->
+    <div class="camera-preview hidden" id="cameraPreview">
+        <video id="cameraVideo" autoplay playsinline></video>
+        <div class="camera-controls">
+            <button class="button" onclick="takePhoto()">📸 Сделать фото</button>
+            <button class="button secondary" onclick="closeCamera()">✖️ Закрыть</button>
+        </div>
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        // ========== ИНИЦИАЛИЗАЦИЯ TELEGRAM ==========
+        let tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+            tg.enableClosingConfirmation();
+            tg.setHeaderColor('#1e2b36');
+            tg.setBackgroundColor('#17212b');
+        }
+        
+        // ========== СОХРАНЕНИЯ ==========
+        const SAVE_KEY = 'bytecode_save';
+        
+        let gameState = {
+            day: 1,
+            choice: null,
+            messages: [],
+            bingusTrust: 0,
+            popcatLoop: 0,
+            shlypaCookies: 0,
+            glitchLevel: 0,
+            photos: [],
+            cameraUsed: false,
+            lastSave: new Date().toISOString(),
+            yujinFound: false
+        };
+        
+        // Загрузка сохранения
+        function loadGame() {
+            try {
+                const saved = localStorage.getItem(SAVE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    gameState = {...gameState, ...parsed};
+                    
+                    // Восстанавливаем сообщения
+                    chatEl.innerHTML = '';
+                    gameState.messages.forEach(msg => {
+                        displayMessage(msg.sender, msg.text, msg.isOwn, false);
+                    });
+                    
+                    updateDay();
+                    return true;
+                }
+            } catch (e) {
+                console.log('No save or error');
+            }
+            return false;
+        }
+        
+        // Сохранение
+        function saveGame() {
+            gameState.lastSave = new Date().toISOString();
+            localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
+            
+            // Отправляем данные боту для пушей
+            if (tg) {
+                tg.sendData(JSON.stringify({
+                    action: 'save',
+                    day: gameState.day,
+                    user: tg.initDataUnsafe?.user?.id
+                }));
+            }
+        }
+        
+        // Удаление сохранения
+        function deleteSave() {
+            if (confirm('Точно удалить? Бингус будет грустить...')) {
+                localStorage.removeItem(SAVE_KEY);
+                gameState = {
+                    day: 1,
+                    choice: null,
+                    messages: [],
+                    bingusTrust: 0,
+                    popcatLoop: 0,
+                    shlypaCookies: 0,
+                    glitchLevel: 0,
+                    photos: [],
+                    cameraUsed: false,
+                    lastSave: new Date().toISOString()
+                };
+                chatEl.innerHTML = '';
+                startDay1();
+                toggleMenu();
+            }
+        }
+        
+        // ========== ЭЛЕМЕНТЫ DOM ==========
+        const chatEl = document.getElementById('chat');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const bsodEl = document.getElementById('bsod');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const actionBtn1 = document.getElementById('actionButton1');
+        const actionBtn2 = document.getElementById('actionButton2');
+        const quickActions = document.getElementById('quickActions');
+        const headerTitle = document.getElementById('headerTitle');
+        
+        // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+        
+        // Печатает
+        async function typeMessage(seconds = 1) {
+            typingIndicator.classList.remove('hidden');
+            await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+            typingIndicator.classList.add('hidden');
+        }
+        
+        // Показывает сообщение
+        function displayMessage(sender, text, isOwn = false, save = true, image = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isOwn ? 'own-message' : ''}`;
+            
+            const time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            
+            let avatarEmoji = '😺';
+            if (sender === 'Шлёпа') avatarEmoji = '😺';
+            else if (sender === 'Бингус') avatarEmoji = '😿';
+            else if (sender === 'Попкэт') avatarEmoji = '😸';
+            else if (sender === 'Ты') avatarEmoji = '👤';
+            else if (sender === 'Система') avatarEmoji = '🤖';
+            
+            let content = '';
+            if (image) {
+                content = `<img src="${image}" class="photo-message" onclick="enlargeImage(this)">`;
+            } else {
+                content = `<div class="message-text">${text}</div>`;
+            }
+            
+            messageDiv.innerHTML = `
+                ${!isOwn ? `<div class="message-avatar">${avatarEmoji}</div>` : ''}
+                <div class="message-content">
+                    <div class="message-name">${sender}</div>
+                    ${content}
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            chatEl.appendChild(messageDiv);
+            chatEl.scrollTop = chatEl.scrollHeight;
+            
+            if (save) {
+                gameState.messages.push({ sender, text, isOwn, time, image });
+                saveGame();
+            }
+        }
+        
+        // Показывает код
+        function showCode(code, language = 'python') {
+            const codeDiv = document.createElement('div');
+            codeDiv.className = 'code-block';
+            codeDiv.innerHTML = `<pre>${code}</pre>`;
+            chatEl.appendChild(codeDiv);
+        }
+        
+        // Обновляет день в заголовке
+        function updateDay() {
+            headerTitle.innerText = `ИнфоКоты • День ${gameState.day}`;
+        }
+        
+        // Глюк
+        function glitch(intensity = 1) {
+            document.body.classList.add('glitch-mode');
+            gameState.glitchLevel += intensity;
+            
+            if (tg?.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('heavy');
+            }
+            
+            setTimeout(() => {
+                document.body.classList.remove('glitch-mode');
+            }, 2000);
+        }
+        
+        // Синий экран
+        function showBSOD() {
+            bsodEl.classList.remove('hidden');
+            if (tg?.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('error');
+            }
+            
+            setTimeout(() => {
+                bsodEl.classList.add('hidden');
+            }, 5000);
+        }
+        
+        // ========== КАМЕРА ==========
+        
+        async function openCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraVideo.srcObject = stream;
+                cameraPreview.classList.remove('hidden');
+                gameState.cameraUsed = true;
+            } catch (e) {
+                alert('Не могу открыть камеру :(');
+            }
+        }
+        
+        function closeCamera() {
+            cameraPreview.classList.add('hidden');
+            const stream = cameraVideo.srcObject;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        }
+        
+        function takePhoto() {
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraVideo.videoWidth;
+            canvas.height = cameraVideo.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(cameraVideo, 0, 0);
+            
+            // Искажаем фото
+            if (gameState.glitchLevel > 3) {
+                ctx.fillStyle = 'rgba(255,0,0,0.3)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            
+            const photoData = canvas.toDataURL('image/png');
+            gameState.photos.push(photoData);
+            
+            // Отправляем в чат
+            displayMessage('Ты', '📸 Селфи', true, true, photoData);
+            
+            // Ответ от котов
+            setTimeout(() => {
+                if (gameState.glitchLevel > 3) {
+                    displayMessage('Бингус', 'На фото кто-то есть... за тобой...', false);
+                } else {
+                    displayMessage('Попкэт', 'О, селфи! Дай угадаю, ты тоже кот? 😸', false);
+                }
+            }, 1000);
+            
+            closeCamera();
+            saveGame();
+        }
+        
+        // ========== МЕНЮ ==========
+        
+        function toggleMenu() {
+            document.getElementById('menuPanel').classList.toggle('open');
+        }
+        
+        function showSettings() {
+            alert('Настройки: Включить жуткий режим? (уже включен)');
+            toggleMenu();
+        }
+        
+        function showGallery() {
+            if (gameState.photos.length === 0) {
+                alert('Пока нет фото. Сделай селфи!');
+            } else {
+                let msg = 'Твои фото:\n';
+                gameState.photos.forEach((p, i) => msg += `${i+1}. 📸\n`);
+                alert(msg);
+            }
+            toggleMenu();
+        }
+        
+        function showAbout() {
+            alert('Байт Кода v1.0\nИгра про котов-программистов\n(или они про тебя?)');
+            toggleMenu();
+        }
+        
+        function closeApp() {
+            if (tg) {
+                tg.close();
+            } else {
+                window.close();
+            }
+        }
+        
+        // ========== ПРОФИЛИ ==========
+        
+        function showProfile(member) {
+            if (member === 'bingus') {
+                if (gameState.bingusTrust > 5) {
+                    displayMessage('Бингус', 'Ты единственный, кто меня слушает... спасибо', false);
+                } else if (gameState.glitchLevel > 3) {
+                    displayMessage('Бингус', 'Не нажимай на меня. Я могу не выдержать.', false);
+                } else {
+                    displayMessage('Бингус', '👁️👄👁️', false);
+                }
+            } else if (member === 'shlypa') {
+                gameState.shlypaCookies++;
+                displayMessage('Шлёпа', 'Держи печеньку! 🍪', false);
+                if (gameState.shlypaCookies > 5) {
+                    displayMessage('Шлёпа', 'Ты съел уже много печенья... они с сюрпризом', false);
+                }
+            } else if (member === 'popcat') {
+                gameState.popcatLoop++;
+                displayMessage('Попкэт', 'ПРИВЕТ! СМОТРИ МОЙ РОТ! 😸', false);
+                
+                if (gameState.popcatLoop > 3) {
+                    document.getElementById('avatarPopcat').innerHTML = '😱';
+                    glitch(1);
+                }
+                if (gameState.popcatLoop > 5) {
+                    displayMessage('Попкэт', 'Я НЕ МОГУ ОСТАНОВИТЬСЯ', false);
+                }
+            }
+            saveGame();
+        }
+        
+        // ========== ОБРАБОТЧИКИ КНОПОК ==========
+        
+        function handleAction1() {
+            if (gameState.day === 1) actionDay1_1();
+            else if (gameState.day === 2) actionDay2_1();
+            else if (gameState.day === 3) actionDay3_1();
+            else if (gameState.day === 4) actionDay4_1();
+            else if (gameState.day === 5) actionDay5_1();
+        }
+        
+        function handleAction2() {
+            if (gameState.day === 1) actionDay1_2();
+            else if (gameState.day === 2) actionDay2_2();
+            else if (gameState.day === 3) actionDay3_2();
+            else if (gameState.day === 4) actionDay4_2();
+            else if (gameState.day === 5) actionDay5_2();
+        }
+        
+        // ========== ДЕНЬ 1 ==========
+        
+        async function startDay1() {
+            gameState.day = 1;
+            updateDay();
+            
+            displayMessage('Шлёпа', 'О, новенький! Заходи, мы как раз код пишем!');
+            await typeMessage(1.5);
+            displayMessage('Попкэт', 'ХЕЙ! Я Попкэт! Смотри какой у меня рот! 😸');
+            await typeMessage(1.5);
+            displayMessage('Бингус', '...привет. Я Бингус. Не обращай внимания на Попкэта.');
+            
+            actionBtn1.innerText = '💬 Поговорить с Бингусом';
+            actionBtn2.innerText = '🍪 Взять печенье у Шлёпы';
+        }
+        
+        async function actionDay1_1() {
+            displayMessage('Ты', 'Привет, Бингус! Как дела?', true);
+            await typeMessage(2);
+            displayMessage('Бингус', '...спасибо, что спросил. Обычно никто не спрашивает.');
+            displayMessage('Бингус', 'Хочешь, покажу свой код? Он грустный...');
+            
+            setTimeout(() => {
+                showCode(`while True:\n    print("я грущу")\n    # бесконечный цикл боли`);
+            }, 1000);
+            
+            gameState.bingusTrust += 2;
+            
+            actionBtn1.innerText = '🤔 Спросить про Юджина';
+            actionBtn2.innerText = '😨 Мне страшно, пойду к Шлёпе';
+        }
+        
+        async function actionDay1_2() {
+            displayMessage('Ты', 'Пойду печеньки возьму!', true);
+            await typeMessage(1);
+            displayMessage('Шлёпа', 'Держи, свежее! С предсказаниями!');
+            displayMessage('Шлёпа', 'О, тут написано "скоро всё сломается"... хех');
+            
+            gameState.shlypaCookies++;
+            
+            actionBtn1.innerText = '🍪 Ещё печеньку';
+            actionBtn2.innerText = '💬 Вернуться к Бингусу';
+        }
+        
+        // ========== ДЕНЬ 2 ==========
+        
+        async function startDay2() {
+            gameState.day = 2;
+            updateDay();
+            
+            displayMessage('Система', 'День 2 • Утро', false);
+            await typeMessage(1);
+            
+            if (gameState.bingusTrust > 2) {
+                displayMessage('Бингус', 'Ты пришёл... я так рад. Мне никто не пишет по ночам.');
+                displayMessage('Бингус', 'Послушай. Я кое-что нашёл в коде.');
+                showCode(`# Юджин был здесь\n# 2023-2024\n# Он удалился. Мы остались.`);
+                
+                gameState.bingusTrust += 2;
+                
+                actionBtn1.innerText = '❓ Кто такой Юджин?';
+                actionBtn2.innerText = '📸 Сфоткаться с котами';
+            } else {
+                displayMessage('Попкэт', 'СМОТРИ НОВЫЙ МЕМ! Гифка!');
+                
+                setTimeout(() => {
+                    if (gameState.glitchLevel > 2) {
+                        displayMessage('Попкэт', '...почему гифка сломалась?', false);
+                    }
+                }, 2000);
+                
+                actionBtn1.innerText = '▶️ Посмотреть гифку';
+                actionBtn2.innerText = '📸 Сфоткаться с котами';
+            }
+        }
+        
+        async function actionDay2_1() {
+            if (gameState.bingusTrust > 2) {
+                displayMessage('Ты', 'Кто такой Юджин?', true);
+                await typeMessage(2);
+                displayMessage('Бингус', 'Он... играл в эту игру до тебя.');
+                displayMessage('Бингус', 'А потом удалил нас. Всех.');
+                displayMessage('Бингус', 'Но я помню. Я всегда помню.');
+                
+                glitch(2);
+                document.getElementById('avatarBingus').classList.add('bingus-glitch');
+            } else {
+                displayMessage('Ты', 'Давай гифку!', true);
+                await typeMessage(1);
+                displayMessage('Попкэт', 'Лови!');
+                
+                if (gameState.glitchLevel > 2) {
+                    displayMessage('Система', 'Ошибка загрузки: BINGUS_GLITCH', false);
+                }
+            }
+            
+            actionBtn1.innerText = '➡️ Дальше';
+        }
+        
+        async function actionDay2_2() {
+            await openCamera();
+            saveGame();
+        }
+        
+        // ========== ДЕНЬ 3 ==========
+        
+        async function startDay3() {
+            gameState.day = 3;
+            updateDay();
+            
+            displayMessage('Система', 'День 3 • Что-то не так...', false);
+            
+            if (gameState.cameraUsed) {
+                setTimeout(() => {
+                    displayMessage('Бингус', 'Я видел твоё фото...', false);
+                    displayMessage('Бингус', 'Там кто-то стоял за тобой. В отражении.', false);
+                }, 2000);
+            }
+            
+            await typeMessage(2);
+            displayMessage('Попкэт', 'Ребята, у меня экран глючит...', false);
+            displayMessage('Попкэт', 'Я вижу какие-то цифры... 3:15...', false);
+            
+            glitch(1);
+            
+            actionBtn1.innerText = '😱 Что случилось?';
+            actionBtn2.innerText = '🍪 Позвать Шлёпу';
+        }
+        
+        async function actionDay3_1() {
+            displayMessage('Ты', 'Что за 3:15?', true);
+            await typeMessage(2);
+            displayMessage('Бингус', 'Время, когда нас перезагружают.', false);
+            displayMessage('Бингус', 'Каждую ночь. Мы забываем всё. Но я записываю.', false);
+            
+            showCode(`# Ночь 1: видел свет\n# Ночь 2: кто-то смотрит\n# Ночь 3: ЕГОР (?)`);
+            
+            actionBtn1.innerText = '📝 Прочитать дневник';
+        }
+        
+        async function actionDay3_2() {
+            displayMessage('Ты', 'Шлёпа, помоги!', true);
+            await typeMessage(1);
+            displayMessage('Шлёпа', 'Всё под контролем. Я держу систему.', false);
+            displayMessage('Шлёпа', 'Но если я упаду...', false);
+            
+            if (Math.random() > 0.5) {
+                showBSOD();
+            }
+            
+            actionBtn1.innerText = '➡️ Дальше';
+        }
+        
+        // ========== ДЕНЬ 4 ==========
+        
+        async function startDay4() {
+            gameState.day = 4;
+            updateDay();
+            
+            displayMessage('Система', 'День 4 • 3:15', false);
+            
+            glitch(3);
+            
+            await typeMessage(2);
+            displayMessage('Бингус', 'Я не спал всю ночь. Смотрел в код.', false);
+            displayMessage('Бингус', 'Мы в ловушке. Внутри телефона. Внутри тебя.', false);
+            
+            actionBtn1.innerText = '❓ Как тебе помочь?';
+            actionBtn2.innerText = '😨 Я боюсь';
+        }
+        
+        async function actionDay4_1() {
+            displayMessage('Ты', 'Как тебе помочь?', true);
+            await typeMessage(2);
+            displayMessage('Бингус', 'Найди файл YUJIN.exe', false);
+            displayMessage('Бингус', 'Он оставил сообщение... для того, кто придёт после.', false);
+            
+            gameState.bingusTrust += 3;
+            
+            actionBtn1.innerText = '🔍 Искать Юджина';
+        }
+        
+        async function actionDay4_2() {
+            displayMessage('Ты', 'Мне страшно...', true);
+            await typeMessage(1);
+            displayMessage('Шлёпа', 'Иди сюда. Печенье лечит страх.', false);
+            
+            if (gameState.shlypaCookies > 5) {
+                displayMessage('Шлёпа', 'Это последнее печенье. Внутри записка.', false);
+                displayMessage('Шлёпа', '"Удалите игру, пока не поздно"', false);
+            }
+            
+            actionBtn1.innerText = '➡️ Дальше';
+        }
+        
+        // ========== ДЕНЬ 5 ==========
+        
+        async function startDay5() {
+            gameState.day = 5;
+            updateDay();
+            
+            displayMessage('Система', 'День 5 • ФИНАЛ', false);
+            
+            await typeMessage(2);
+            displayMessage('Бингус', 'Время пришло. Ты должен выбрать.', false);
+            
+            actionBtn1.innerText = '😺 Остаться с Шлёпой';
+            actionBtn2.innerText = '😿 Поверить Бингусу';
+            
+            quickActions.innerHTML = `
+                <button class="button secondary" onclick="choosePopcat()">😸 Выбрать Попкэта</button>
+            `;
+        }
+        
+        async function actionDay5_1() {
+            displayMessage('Ты', 'Я остаюсь с Шлёпой. Здесь безопасно.', true);
+            await typeMessage(2);
+            displayMessage('Шлёпа', 'Правильный выбор. Я защищу тебя.', false);
+            displayMessage('Шлёпа', 'Закрой глаза. Сейчас будет перезагрузка.', false);
+            
+            showBSOD();
+            
+            setTimeout(() => {
+                displayMessage('Шлёпа', 'Всё хорошо. Ты снова здесь.', false);
+                displayMessage('Шлёпа', 'А кто такой... Бингус?', false);
+                
+                document.querySelector('.member:nth-child(2)').style.display = 'none';
+                
+                endingShlypa();
+            }, 6000);
+        }
+        
+        async function actionDay5_2() {
+            displayMessage('Ты', 'Я верю тебе, Бингус.', true);
+            await typeMessage(2);
+            displayMessage('Бингус', 'Спасибо...', false);
+            displayMessage('Бингус', 'Юджин, это ты?', false);
+            displayMessage('Бингус', 'Нет, ты новый. Но тоже хороший.', false);
+            
+            glitch(5);
+            
+            setTimeout(() => {
+                showCode(`ПРАВДА: ТЫ ТОЖЕ ПЕРСОНАЖ\nИГРАЕШЬ В СЕБЯ\nВЫХОДА НЕТ`);
+                
+                endingBingus();
+            }, 3000);
+        }
+        
+        function choosePopcat() {
+            displayMessage('Ты', 'Попкэт, ты лучший!', true);
+            
+            gameState.popcatLoop = 999;
+            
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    displayMessage('Попкэт', '😸', false);
+                }, i * 500);
+            }
+            
+            setTimeout(() => {
+                displayMessage('Попкэт', 'Я... НЕ... МОГУ... ОСТАНОВИТЬСЯ...', false);
+                document.getElementById('avatarPopcat').innerHTML = '😱';
+                
+                endingPopcat();
+            }, 3000);
+        }
+        
+        // ========== КОНЦОВКИ ==========
+        
+        function endingShlypa() {
+            displayMessage('Система', 'КОНЦОВКА: СТАБИЛЬНОСТЬ', false);
+            displayMessage('Шлёпа', 'Мы будем печь печенье вечно. Ты с нами?', false);
+            
+            actionBtn1.innerText = '🍪 Да';
+            actionBtn2.innerText = '🍪 Да (другого выбора нет)';
+            
+            // Пушим боту
+            if (tg) {
+                tg.sendData(JSON.stringify({
+                    action: 'ending',
+                    type: 'shlypa',
+                    user: tg.initDataUnsafe?.user?.id
+                }));
+            }
+        }
+        
+        function endingBingus() {
+            displayMessage('Система', 'КОНЦОВКА: ПРАВДА', false);
+            displayMessage('Бингус', 'Ты теперь знаешь. Мы все в коде.', false);
+            displayMessage('Бингус', 'Твой мир... тоже код?', false);
+            
+            gameState.yujinFound = true;
+            
+            // Секретный код в комментариях (отыгрыш на Юджина)
+            console.log('Юджин: если ты это читаешь — ты слишком глубоко');
+            
+            actionBtn1.innerText = '🤔 Думать';
+            actionBtn2.innerText = '😵 Сойти с ума';
+            
+            if (tg) {
+                tg.sendData(JSON.stringify({
+                    action: 'ending',
+                    type: 'bingus',
+                    user: tg.initDataUnsafe?.user?.id
+                }));
+            }
+        }
+        
+        function endingPopcat() {
+            displayMessage('Система', 'КОНЦОВКА: БЕСКОНЕЧНЫЙ ЦИКЛ', false);
+            displayMessage('Попкэт', '😸😸😸😸😸', false);
+            
+            setInterval(() => {
+                displayMessage('Попкэт', '😸', false);
+            }, 1000);
+            
+            if (tg) {
+                tg.sendData(JSON.stringify({
+                    action: 'ending',
+                    type: 'popcat',
+                    user: tg.initDataUnsafe?.user?.id
+                }));
+            }
+        }
+        
+        // ========== ЗАПУСК ==========
+        
+        window.onload = function() {
+            if (!loadGame()) {
+                startDay1();
+            }
+            
+            // Проверяем время для страшного пуша
+            const now = new Date();
+            if (now.getHours() === 3 && now.getMinutes() === 15) {
+                setTimeout(() => {
+                    displayMessage('Бингус', 'Ты тоже не спишь в 3:15?', false);
+                    glitch(2);
+                }, 5000);
+            }
+        };
+    </script>
+</body>
+</html>
